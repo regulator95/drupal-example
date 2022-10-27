@@ -1,0 +1,44 @@
+version: '3.9'
+services:
+  drupal-serverevs:
+    container_name: example
+    image: alpine
+    ports:
+     - 8088:80
+    environment:
+      hash_salt: k_7ame-GnEyWUYWKFJWIL0EjcwIZnf6UjVvT3YNgTxM6Rb2qUWNP8pOzxQ_Q29OtENOVGzMnHA
+      sitename: example
+      database: drupal
+      username: mysql
+      password: 1234
+      user: admin
+      pass: 1234
+      host: mysql
+      repository: https://github.com/regulator95/drupal-example
+      port: 3306
+      namespace:
+      driver: mysql
+      load_database: "true"
+      local_build: "true"
+      CONTAINER_BRANCH_OR_TAG: main
+    depends_on:
+      mysql:
+        condition: service_healthy
+    restart: always
+  mysql:
+    container_name: drupal-db
+    image: mysql:5.7.39
+    ports:
+     - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: my-secret-pw
+      MYSQL_USER: mysql
+      MYSQL_PASSWORD: 1234
+      MYSQL_DATABASE: drupal
+    command: [--max-allowed-packet=67108864]
+    healthcheck:
+      test: "mysqladmin -umysql -p1234  ping"
+      interval: 10s
+      timeout: 5s
+      retries: 30
+    restart: always
